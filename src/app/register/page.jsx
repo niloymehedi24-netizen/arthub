@@ -127,7 +127,7 @@ export default function RegisterPage() {
               variant="bordered"
               className="h-12 w-full font-bold"
               startContent={<FcGoogle className="h-5 w-5" />}
-              onPress={handleGoogleRegister}
+              onClick={handleGoogleRegister}
             >
               <span className="flex items-center justify-center gap-2">
                 <FcGoogle className="h-5 w-5" />

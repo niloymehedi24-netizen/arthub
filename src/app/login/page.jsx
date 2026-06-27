@@ -62,11 +62,15 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
+  const handleGoogleLogin = async (e) => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (error) {
+      toast.error("Social login failed initialization");
+    }
   };
 
   return (
@@ -108,7 +112,7 @@ export default function LoginPage() {
               </p>
 
               <h2 className="mt-2 text-4xl font-black text-foreground">
-                Sign in to ArtHub
+                Log in to ArtHub
               </h2>
 
               <p className="mt-3 text-sm text-default-500">
@@ -126,7 +130,7 @@ export default function LoginPage() {
               type="button"
               variant="bordered"
               className="h-12 w-full font-bold"
-              onPress={handleGoogleLogin}
+              onClick={handleGoogleLogin}
             >
               <span className="flex items-center justify-center gap-2">
                 <FcGoogle className="h-5 w-5" />
