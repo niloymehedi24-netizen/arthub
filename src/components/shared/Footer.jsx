@@ -34,7 +34,7 @@ export default function Footer() {
 
             <p className="mt-5 max-w-sm text-sm leading-6 text-default-500">
               Discover original artworks, support emerging artists, and bring
-              meaningful creativity into your space.
+              meaningful creativity into your art space.
             </p>
 
             <div className="mt-6 flex items-center gap-3">
