@@ -1,17 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppTheme } from "@/components/ThemeProvider";
-import { useState } from "react";
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@heroui/react";
+import { useState, useRef, useEffect } from "react";
+
+import { Avatar, Button } from "@heroui/react";
 import {
   ArrowRightFromSquare,
   Bars,
@@ -26,11 +20,27 @@ import {
   Xmark,
 } from "@gravity-ui/icons";
 
-export default function Navbar({ user, onLogout }) {
+import { authClient, useSession } from "@/lib/auth-client";
+import ThemeToggle from "../ThemeToggle";
+
+export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { resolvedTheme, setTheme } = useAppTheme();
+
+  // Mobile drawer state
   const [open, setOpen] = useState(false);
 
+  // Dropdown visibility toggle states
+  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+
+  // References for outside click tracking
+  const dashboardRef = useRef(null);
+  const avatarRef = useRef(null);
+
+  const { data: sessionData, isPending } = useSession();
+  const user = sessionData?.user;
   const role = user?.role || "guest";
 
   const dashboardHref =
@@ -50,49 +60,54 @@ export default function Navbar({ user, onLogout }) {
       {
         label: "Purchase History",
         href: "/dashboard/user",
-        icon: <ShoppingBag></ShoppingBag>,
+        icon: <ShoppingBag />,
       },
-      {
-        label: "Profile",
-        href: "/dashboard/user/profile",
-        icon: <Person></Person>,
-      },
+      { label: "Profile", href: "/dashboard/user/profile", icon: <Person /> },
     ],
     artist: [
-      {
-        label: "Manage Artworks",
-        href: "/dashboard/artist",
-        icon: <Brush></Brush>,
-      },
+      { label: "Manage Artworks", href: "/dashboard/artist", icon: <Brush /> },
       {
         label: "Sales History",
         href: "/dashboard/artist/sales",
-        icon: <ChartColumn></ChartColumn>,
+        icon: <ChartColumn />,
       },
-      {
-        label: "Profile",
-        href: "/dashboard/artist/profile",
-        icon: <Person></Person>,
-      },
+      { label: "Profile", href: "/dashboard/artist/profile", icon: <Person /> },
     ],
     admin: [
       {
         label: "Admin Overview",
         href: "/dashboard/admin",
-        icon: <ChartColumn></ChartColumn>,
+        icon: <ChartColumn />,
       },
       {
         label: "Manage Users",
         href: "/dashboard/admin/users",
-        icon: <Person></Person>,
+        icon: <Person />,
       },
       {
         label: "Manage Artworks",
         href: "/dashboard/admin/artworks",
-        icon: <Brush></Brush>,
+        icon: <Brush />,
       },
     ],
   };
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dashboardRef.current &&
+        !dashboardRef.current.contains(event.target)
+      ) {
+        setDashboardOpen(false);
+      }
+      if (avatarRef.current && !avatarRef.current.contains(event.target)) {
+        setAvatarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const isActive = (href) => {
     if (href === "/") return pathname === "/";
@@ -103,13 +118,21 @@ export default function Navbar({ user, onLogout }) {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
+  const handleLogout = async () => {
+    await authClient.signOut();
+    setOpen(false);
+    setAvatarOpen(false);
+    router.push("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-default-200/70 bg-background/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left Brand Container */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => setOpen(!open)}
-            className="grid h-10 w-10 place-items-center rounded-xl border border-default-200 sm:hidden"
+            className="grid h-10 w-10 place-items-center rounded-xl border border-default-200 sm:hidden cursor-pointer text-foreground"
             aria-label="Toggle menu"
           >
             {open ? <Xmark /> : <Bars />}
@@ -132,6 +155,7 @@ export default function Navbar({ user, onLogout }) {
           </Link>
         </div>
 
+        {/* Center Navigation Links */}
         <div className="hidden items-center gap-7 sm:flex">
           {navLinks.map((link) => (
             <Link
@@ -148,108 +172,131 @@ export default function Navbar({ user, onLogout }) {
           ))}
 
           {user && (
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  variant="light"
-                  startContent={<LayoutHeaderCellsLarge className="h-4 w-4" />}
-                  className={
-                    pathname.startsWith("/dashboard")
-                      ? "font-semibold text-fuchsia-500"
-                      : "font-semibold text-default-600"
-                  }
-                >
-                  Dashboard
-                </Button>
-              </DropdownTrigger>
+            <div className="relative" ref={dashboardRef}>
+              <button
+                onClick={() => setDashboardOpen(!dashboardOpen)}
+                className={`flex items-center gap-1.5 h-10 px-3 rounded-xl text-sm font-semibold transition cursor-pointer select-none hover:bg-default-100 ${
+                  pathname.startsWith("/dashboard")
+                    ? "text-fuchsia-500"
+                    : "text-default-600 hover:text-foreground"
+                }`}
+              >
+                <LayoutHeaderCellsLarge className="h-4 w-4" />
+                Dashboard
+              </button>
 
-              <DropdownMenu aria-label="Dashboard menu">
-                {(dashboardLinks[role] || dashboardLinks.user).map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <DropdownItem
-                      key={item.href}
-                      as={Link}
-                      href={item.href}
-                      startContent={<Icon className="h-4 w-4" />}
-                    >
-                      {item.label}
-                    </DropdownItem>
-                  );
-                })}
-              </DropdownMenu>
-            </Dropdown>
+              {/* Raw HTML/Tailwind Dropdown Panel */}
+              {dashboardOpen && (
+                <div className="absolute left-0 mt-2 w-56 origin-top-left rounded-xl border border-default-200/60 bg-background p-1.5 shadow-xl ring-1 ring-black/5 focus:outline-hidden z-50">
+                  {(dashboardLinks[role] || dashboardLinks.user).map(
+                    (item, index) => (
+                      <Link
+                        key={index}
+                        href={item.href}
+                        onClick={() => setDashboardOpen(false)}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-default-700 transition hover:bg-default-100 hover:text-foreground"
+                      >
+                        <span className="text-default-500 h-4 w-4 flex items-center">
+                          {item.icon}
+                        </span>
+                        {item.label}
+                      </Link>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Button
-            isIconOnly
-            variant="flat"
-            aria-label="Toggle theme"
-            onPress={toggleTheme}
-          >
-            <span suppressHydrationWarning>
-              {resolvedTheme === "dark" ? <Sun /> : <Moon />}
-            </span>
-          </Button>
+        {/* Right Action Menu Items */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <ThemeToggle />
+          </div>
 
-          {user ? (
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <button className="flex items-center gap-2 rounded-full outline-none">
-                  <Avatar
-                    size="sm"
-                    src={user.image}
-                    name={user.name}
-                    className="ring-2 ring-fuchsia-400/40"
-                  />
-                  <span className="hidden text-sm font-semibold text-default-700 md:inline">
-                    {user.name}
-                  </span>
-                </button>
-              </DropdownTrigger>
+          {!isPending && (
+            <>
+              {user ? (
+                <div className="flex items-center gap-3">
+                  {/* User Profile Dropdown Anchor */}
+                  <div className="relative" ref={avatarRef}>
+                    <button
+                      onClick={() => setAvatarOpen(!avatarOpen)}
+                      className="flex items-center gap-2 rounded-full outline-hidden cursor-pointer select-none transition opacity-90 hover:opacity-100"
+                    >
+                      <Avatar
+                        size="sm"
+                        src={user.image || undefined}
+                        name={user.name}
+                        referrerPolicy="no-referrer"
+                        className="ring-2 ring-fuchsia-400/40"
+                      />
+                      <span className="hidden text-sm font-semibold text-default-700 md:inline">
+                        {user.name}
+                      </span>
+                    </button>
 
-              <DropdownMenu aria-label="User menu">
-                <DropdownItem key="dashboard" as={Link} href={dashboardHref}>
-                  Dashboard
-                </DropdownItem>
-                <DropdownItem
-                  key="profile"
-                  as={Link}
-                  href={`${dashboardHref}/profile`}
-                >
-                  Profile
-                </DropdownItem>
-                <DropdownItem
-                  key="logout"
-                  color="danger"
-                  startContent={<ArrowRightFromSquare className="h-4 w-4" />}
-                  onPress={onLogout}
-                >
-                  Logout
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link href={"/login"}>
-                <Button variant="flat" className="font-bold text-fuchsia-500">
-                  Login
-                </Button>
-              </Link>
+                    {/* Raw HTML Profile List */}
+                    {avatarOpen && (
+                      <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl border border-default-200/60 bg-background p-1.5 shadow-xl ring-1 ring-black/5 z-50">
+                        <Link
+                          href={dashboardHref}
+                          onClick={() => setAvatarOpen(false)}
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-default-700 transition hover:bg-default-100 hover:text-foreground"
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          href={`${dashboardHref}/profile`}
+                          onClick={() => setAvatarOpen(false)}
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-default-700 transition hover:bg-default-100 hover:text-foreground"
+                        >
+                          Profile
+                        </Link>
+                      </div>
+                    )}
+                  </div>
 
-              <Link href={"/register"}>
-                <Button className="bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-lg shadow-fuchsia-500/25">
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
+                  {/* Desktop Logout Button - Swapped onClick to onPress for HeroUI compatibility */}
+                  <Link href={"/"}>
+                    <Button
+                      variant="danger-soft"
+                      size="lg"
+                      className="hidden sm:flex font-bold text-xs px-3 h-8 rounded-xl"
+                      startContent={
+                        <ArrowRightFromSquare className="h-3.5 w-3.5" />
+                      }
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link href={"/login"}>
+                    <Button
+                      variant="flat"
+                      className="font-bold text-fuchsia-500"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+
+                  <Link href={"/register"}>
+                    <Button className="bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-lg shadow-fuchsia-500/25">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </div>
       </nav>
 
+      {/* Responsive Mobile Tray Section */}
       {open && (
         <div className="border-t border-default-200 bg-background px-4 py-5 sm:hidden">
           <div className="flex flex-col gap-4">
@@ -267,24 +314,36 @@ export default function Navbar({ user, onLogout }) {
             ))}
 
             {user && (
-              <Link
-                href={dashboardHref}
-                onClick={() => setOpen(false)}
-                className="text-lg font-semibold text-default-700"
-              >
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href={dashboardHref}
+                  onClick={() => setOpen(false)}
+                  className="text-lg font-semibold text-default-700"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-left text-lg font-semibold text-danger cursor-pointer"
+                >
+                  <ArrowRightFromSquare className="h-5 w-5" />
+                  Logout
+                </button>
+              </>
             )}
 
-            {!user && (
+            {!user && !isPending && (
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <Link href={"/login"}>
-                  <Button variant="flat" className="font-bold text-fuchsia-500">
+                <Link href={"/login"} className="w-full">
+                  <Button
+                    variant="flat"
+                    className="font-bold text-fuchsia-500 w-full"
+                  >
                     Login
                   </Button>
                 </Link>
-                <Link href={"/register"}>
-                  <Button className="bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-lg shadow-fuchsia-500/25">
+                <Link href={"/register"} className="w-full">
+                  <Button className="bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-lg shadow-fuchsia-500/25 w-full">
                     Sign Up
                   </Button>
                 </Link>

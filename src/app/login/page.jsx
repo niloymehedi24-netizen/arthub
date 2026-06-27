@@ -35,20 +35,26 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const { data, error } = await authClient.signIn.email({
+      await authClient.signIn.email({
         email,
         password,
+        // FIXED: fetchOptions handles updating hooks smoothly before structural layout redirect
+        fetchOptions: {
+          onSuccess: async (ctx) => {
+            const role = ctx?.data?.user?.role || "user";
+            toast.success("Login successful");
+
+            // Sync current client router state
+            router.refresh();
+
+            // Safe redirect transition
+            router.replace(getRedirectPath(role));
+          },
+          onError: (ctx) => {
+            toast.error(ctx.error.message || "Login failed");
+          },
+        },
       });
-
-      if (error) {
-        throw new Error(error.message || "Login failed");
-      }
-
-      const role = data?.user?.role || "user";
-
-      toast.success("Login successful");
-      router.replace(getRedirectPath(role));
-      router.refresh();
     } catch (error) {
       toast.error(error.message || "Something went wrong");
     } finally {
