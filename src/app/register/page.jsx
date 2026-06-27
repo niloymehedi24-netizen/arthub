@@ -194,7 +194,7 @@ export default function RegisterPage() {
                   <Button
                     type="button"
                     variant={role === "user" ? "flat" : "bordered"}
-                    onPress={() => setRole("user")}
+                    onClick={() => setRole("user")}
                     className={`min-h-28 w-full rounded-2xl border px-4 py-4 ${
                       role === "user"
                         ? "border-fuchsia-400 bg-fuchsia-500/10"
@@ -212,7 +212,7 @@ export default function RegisterPage() {
                   <Button
                     type="button"
                     variant={role === "artist" ? "flat" : "bordered"}
-                    onPress={() => setRole("artist")}
+                    onClick={() => setRole("artist")}
                     className={`min-h-28 w-full rounded-2xl border px-4 py-4 ${
                       role === "artist"
                         ? "border-fuchsia-400 bg-fuchsia-500/10"
