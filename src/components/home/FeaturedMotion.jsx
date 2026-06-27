@@ -51,14 +51,14 @@ export default function FeaturedMotion() {
             transition={{ delay: 0.24, duration: 0.6 }}
             className="mt-8"
           >
-            <Button
-              as={Link}
-              href="/browse-artworks"
-              className="bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-lg shadow-fuchsia-500/25"
-              endContent={<ArrowRight className="h-4 w-4" />}
-            >
-              Start Exploring
-            </Button>
+            <Link href={"/browse-artworks"}>
+              <Button
+                className="bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-lg shadow-fuchsia-500/25"
+                endContent={<ArrowRight className="h-4 w-4" />}
+              >
+                Start Exploring
+              </Button>
+            </Link>
           </motion.div>
         </div>
 
