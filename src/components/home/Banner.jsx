@@ -10,7 +10,7 @@ const slides = [
   {
     title: "Discover & Buy Original Art",
     subtitle:
-      "Explore expressive paintings, digital masterpieces, and rare creations from talented artists around the world.",
+      "Explore expressive paintings, digital masterpieces, and rare creations from talented artists around the globe.",
     image:
       "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?q=80&w=1600&auto=format&fit=crop",
     tag: "Curated Marketplace",
@@ -26,7 +26,7 @@ const slides = [
   {
     title: "Support Emerging Artists",
     subtitle:
-      "Connect directly with creators, discover new styles, and help artists grow through every purchase.",
+      "Connect directly with creators, discover new styles, and help artists grow through every purchase from here on.",
     image:
       "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1600&auto=format&fit=crop",
     tag: "Artist Powered",
