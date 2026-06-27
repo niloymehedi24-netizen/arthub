@@ -1,9 +1,10 @@
 "use client";
 
-import { Avatar, Button } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "@gravity-ui/icons";
+import Image from "next/image";
 
 const artists = [
   {
@@ -65,17 +66,23 @@ export default function TopArtists() {
               className="rounded-2xl border border-default-200 bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="flex items-center gap-4">
-                <Avatar
-                  src={artist.avatar}
-                  name={artist.name}
-                  className="h-16 w-16 ring-3 ring-fuchsia-400/30"
-                />
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full ring-3 ring-fuchsia-400/30">
+                  <Image
+                    src={artist.avatar}
+                    alt={artist.name}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </div>
 
-                <div>
-                  <h3 className="text-lg font-black text-foreground">
+                <div className="min-w-0">
+                  <h3 className="truncate text-lg font-black text-foreground">
                     {artist.name}
                   </h3>
-                  <p className="text-sm text-default-500">{artist.specialty}</p>
+                  <p className="truncate text-sm text-default-500">
+                    {artist.specialty}
+                  </p>
                 </div>
               </div>
 
