@@ -4,7 +4,7 @@ import Navbar from "@/components/shared/Navbar";
 import ThemeProvider from "@/components/ThemeProvider";
 import Footer from "@/components/shared/Footer";
 import { Toaster } from "react-hot-toast";
-import { auth } from "@/lib/auth"; // your Better Auth instance
+import { auth } from "@/lib/auth"; 
 import { headers } from "next/headers";
 
 const geistSans = Geist({
@@ -27,8 +27,6 @@ export default async function RootLayout({ children }) {
     headers: await headers(),
   });
 
-  const user = session?.user ?? null;
-
   return (
     <html
       lang="en"
@@ -38,9 +36,9 @@ export default async function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <main>
           <ThemeProvider>
-            <Navbar />
+            <Navbar></Navbar>
             {children}
-            <Footer />
+            <Footer></Footer>
             <Toaster />
           </ThemeProvider>
         </main>
