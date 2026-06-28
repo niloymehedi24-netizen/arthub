@@ -28,7 +28,7 @@ export default function EmptyState({
 
         {/* Action Button */}
         {buttonText && (buttonHref || onButtonClick) && (
-          <div className="mt-8">
+          <div className="mt-7">
             {buttonHref ? (
               <Button
                 as={Link}
