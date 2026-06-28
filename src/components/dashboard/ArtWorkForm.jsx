@@ -20,6 +20,9 @@ export default function ArtworkForm({
   submitText = "Add Artwork",
   onSubmit,
 }) {
+  // Check if we are in edit mode by seeing if initial data (like a title) was provided
+  const isEditMode = !!defaultValues.title;
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <form
@@ -28,43 +31,60 @@ export default function ArtworkForm({
       >
         <div className="border-b border-default-200 pb-6">
           <h2 className="text-2xl font-black text-foreground">
-            Artwork Information
+            {isEditMode ? "Edit Artwork Details" : "Artwork Information"}
           </h2>
 
           <p className="mt-2 text-sm text-default-500">
-            Fill in the details below to publish your artwork.
+            {isEditMode
+              ? "Modify the fields below to update your existing artwork listing."
+              : "Fill in the details below to publish your artwork."}
           </p>
         </div>
+
+        {/* Core Info Row */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Artwork Image */}
+          {/* Artwork Image Wrapper */}
           <div className="rounded-2xl border-2 border-dashed border-default-300 p-8 text-center transition hover:border-fuchsia-400">
             <Picture className="mx-auto mb-3 h-10 w-10 text-fuchsia-500" />
 
-            <p className="font-semibold">Upload Artwork</p>
+            <p className="font-semibold">
+              {isEditMode ? "Change Artwork Image" : "Upload Artwork"}
+            </p>
 
             <p className="text-sm text-default-500">PNG, JPG or WEBP</p>
+            {isEditMode && (
+              <p className="text-xs text-amber-500 font-medium mt-1">
+                Leave blank to keep current image
+              </p>
+            )}
 
             <Input
               type="file"
               name="image"
               accept="image/*"
-              required
+              // FIXED: Only require file selection if the user is making a brand new listing
+              required={!isEditMode}
               className="mt-4"
             />
           </div>
 
-          {/* Artwork Title */}
-          <Input
-            name="title"
-            label="Artwork Title"
-            placeholder="Enter artwork title"
-            variant="bordered"
-            defaultValue={defaultValues.title}
-            startcontent={<Pencil className="h-4 w-4 text-default-400" />}
-            required
-          />
+          <div className="flex flex-col justify-center">
+            {/* Artwork Title */}
+            <Input
+              name="title"
+              label="Artwork Title"
+              placeholder="Enter artwork title"
+              variant="bordered"
+              defaultValue={defaultValues.title}
+              startcontent={<Pencil className="h-4 w-4 text-default-400" />}
+              required
+              className="w-full"
+            />
+          </div>
+        </div>
 
-          {/* Description */}
+        {/* Full Width Description Area */}
+        <div className="w-full">
           <TextArea
             name="description"
             label="Description"
@@ -76,6 +96,7 @@ export default function ArtworkForm({
           />
         </div>
 
+        {/* Bottom Metadata Info Split */}
         <div className="grid gap-6 md:grid-cols-2">
           {/* Price */}
           <Input
@@ -90,13 +111,15 @@ export default function ArtworkForm({
           />
 
           {/* Category */}
-          <div>
-            <label className="mb-2 block text-sm font-medium">Category</label>
+          <div className="flex flex-col justify-end">
+            <label className="mb-2 block text-sm font-medium text-default-600">
+              Category
+            </label>
 
             <select
               name="category"
               defaultValue={defaultValues.category || ""}
-              className="h-12 w-full rounded-xl border border-default-200 bg-background px-3 text-sm outline-none focus:border-fuchsia-500"
+              className="h-12 w-full rounded-xl border border-default-200 bg-background px-3 text-sm outline-none transition focus:border-fuchsia-500"
               required
             >
               <option value="">Select Category</option>
@@ -113,7 +136,7 @@ export default function ArtworkForm({
         <Button
           type="submit"
           isLoading={loading}
-          className="h-14 w-full rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-lg font-black text-white shadow-xl shadow-fuchsia-500/20"
+          className="h-14 w-full rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-lg font-black text-white shadow-xl shadow-fuchsia-500/20 cursor-pointer"
         >
           {submitText}
         </Button>
