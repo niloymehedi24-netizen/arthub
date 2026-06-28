@@ -65,7 +65,11 @@ export default function Navbar() {
       { label: "Profile", href: "/dashboard/user/profile", icon: <Person /> },
     ],
     artist: [
-      { label: "Manage Artworks", href: "/dashboard/artist", icon: <Brush /> },
+      {
+        label: "Manage Artworks",
+        href: "/dashboard/artist/add-works",
+        icon: <Brush />,
+      },
       {
         label: "Sales History",
         href: "/dashboard/artist/sales",

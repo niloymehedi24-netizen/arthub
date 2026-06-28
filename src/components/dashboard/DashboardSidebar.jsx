@@ -77,7 +77,7 @@ export default function DashboardSidebar() {
       },
       {
         label: "Manage Artworks",
-        href: "/dashboard/artist/artworks",
+        href: "/dashboard/artist/add-works",
         icon: Brush,
       },
       {
