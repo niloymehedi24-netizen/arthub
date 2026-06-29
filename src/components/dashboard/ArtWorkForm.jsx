@@ -44,27 +44,48 @@ export default function ArtworkForm({
         {/* Core Info Row */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Artwork Image Wrapper */}
-          <div className="rounded-2xl border-2 border-dashed border-default-300 p-8 text-center transition hover:border-fuchsia-400">
+          <div className="space-y-5 rounded-2xl border-2 border-dashed border-default-300 p-8 text-center transition hover:border-fuchsia-400">
             <Picture className="mx-auto mb-3 h-10 w-10 text-fuchsia-500" />
 
             <p className="font-semibold">
               {isEditMode ? "Change Artwork Image" : "Upload Artwork"}
             </p>
 
-            <p className="text-sm text-default-500">PNG, JPG or WEBP</p>
+            <p className="text-sm text-default-500">
+              Upload an image or paste an image URL
+            </p>
+
             {isEditMode && (
-              <p className="text-xs text-amber-500 font-medium mt-1">
-                Leave blank to keep current image
+              <p className="mt-1 text-xs font-medium text-amber-500">
+                Leave both fields empty to keep the current image.
               </p>
             )}
 
+            {/* Upload Image */}
             <Input
               type="file"
               name="image"
               accept="image/*"
-              // FIXED: Only require file selection if the user is making a brand new listing
               required={!isEditMode}
-              className="mt-4"
+              className="mt-2"
+              label="Upload Image"
+              variant="bordered"
+            />
+
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-default-200"></div>
+              <span className="text-xs text-default-400">OR</span>
+              <div className="h-px flex-1 bg-default-200"></div>
+            </div>
+
+            {/* Image URL */}
+            <Input
+              type="url"
+              name="imageUrl"
+              label="Image URL"
+              placeholder="https://images.unsplash.com/..."
+              variant="bordered"
             />
           </div>
 

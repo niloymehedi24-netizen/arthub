@@ -9,6 +9,7 @@ import { Button, Skeleton } from "@heroui/react";
 import { useSession } from "@/lib/auth-client";
 import { getSingleArtwork } from "@/lib/api/artwork/data";
 import { deleteArtwork } from "@/lib/api/artwork/action";
+import { purchaseArtwork } from "@/lib/api/purchase/action";
 import Image from "next/image";
 import { Pencil, ShoppingBag, TrashBin } from "@gravity-ui/icons";
 
@@ -59,15 +60,40 @@ export default function ArtworkDetailsPage() {
     }
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (!session?.user) {
-      toast.error("Please log in to purchase artworks");
+      toast.error("Please login first.");
       router.push("/login");
       return;
     }
-    const toastId = toast.loading("Redirecting to checkout...");
 
-    toast.dismiss(toastId);
+    try {
+      const purchase = {
+        artworkId: artwork._id,
+
+        artworkTitle: artwork.title,
+
+        artworkImage: artwork.image,
+
+        artistName: artwork.artistName,
+
+        artistEmail: artwork.artistEmail,
+
+        buyerName: session.user.name,
+
+        buyerEmail: session.user.email,
+
+        price: artwork.price,
+      };
+
+      await purchaseArtwork(purchase);
+
+      toast.success("Artwork purchased successfully!");
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Purchase failed.");
+    }
   };
 
   const canPurchase =
