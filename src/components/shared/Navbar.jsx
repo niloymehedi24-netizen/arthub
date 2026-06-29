@@ -12,11 +12,9 @@ import {
   Brush,
   ChartColumn,
   LayoutHeaderCellsLarge,
-  Moon,
   Palette,
   Person,
   ShoppingBag,
-  Sun,
   Xmark,
 } from "@gravity-ui/icons";
 
@@ -263,19 +261,18 @@ export default function Navbar() {
                   </div>
 
                   {/* Desktop Logout Button - Swapped onClick to onPress for HeroUI compatibility */}
-                  <Link href={"/"}>
-                    <Button
-                      variant="danger-soft"
-                      size="lg"
-                      className="hidden sm:flex font-bold text-xs px-3 h-8 rounded-xl"
-                      startContent={
-                        <ArrowRightFromSquare className="h-3.5 w-3.5" />
-                      }
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </Button>
-                  </Link>
+
+                  <Button
+                    variant="danger-soft"
+                    size="lg"
+                    className="hidden sm:flex font-bold text-xs px-3 h-8 rounded-xl"
+                    startContent={
+                      <ArrowRightFromSquare className="h-3.5 w-3.5" />
+                    }
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
