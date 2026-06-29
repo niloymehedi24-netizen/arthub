@@ -76,14 +76,11 @@ export default function BoughtArtworkGrid({ artworks, loading }) {
               Purchased on {new Date(art.purchasedAt).toLocaleDateString()}
             </p>
 
-            <Button
-              as={Link}
-              href={`/browse-artworks/${art.artworkId}`}
-              color="secondary"
-              fullWidth
-            >
-              View Details
-            </Button>
+            <Link href={`/browse-artworks/${art.artworkId}`}>
+              <Button color="secondary" fullWidth>
+                View Details
+              </Button>
+            </Link>
           </div>
         </Card>
       ))}
