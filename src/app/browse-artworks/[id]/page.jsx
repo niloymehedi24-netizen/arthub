@@ -10,6 +10,8 @@ import { useSession } from "@/lib/auth-client";
 import { getSingleArtwork } from "@/lib/api/artwork/data";
 import { deleteArtwork } from "@/lib/api/artwork/action";
 import { purchaseArtwork } from "@/lib/api/purchase/action";
+import { createComment } from "@/lib/api/comment/action";
+import { getComments } from "@/lib/api/comment/data";
 import Image from "next/image";
 import { Pencil, ShoppingBag, TrashBin } from "@gravity-ui/icons";
 
@@ -21,6 +23,14 @@ export default function ArtworkDetailsPage() {
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+
+    getComments(id).then(setComments);
+  }, [id]);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -35,6 +45,33 @@ export default function ArtworkDetailsPage() {
     };
     fetchItem();
   }, [id]);
+
+  const handleComment = async () => {
+    if (!session?.user) {
+      toast.error("Please login first");
+      return;
+    }
+
+    if (!comment.trim()) return;
+
+    await createComment({
+      artworkId: id,
+      artworkTitle: artwork.title,
+
+      userName: session.user.name,
+      userEmail: session.user.email,
+
+      comment,
+    });
+
+    toast.success("Comment Added");
+
+    setComment("");
+
+    const updated = await getComments(id);
+
+    setComments(updated);
+  };
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
@@ -197,6 +234,38 @@ export default function ArtworkDetailsPage() {
             <p className="text-sm leading-relaxed text-default-500 whitespace-pre-line">
               {artwork.description}
             </p>
+          </div>
+
+          <div className="space-y-5">
+            <h2 className="text-xl font-bold">Comments</h2>
+
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={4}
+              className="w-full rounded-xl border p-4"
+              placeholder="Write your thoughts..."
+            />
+
+            <Button color="secondary" onPress={handleComment}>
+              Post Comment
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            {comments.map((item) => (
+              <div key={item._id} className="rounded-xl border p-5">
+                <div className="flex justify-between">
+                  <h3 className="font-semibold">{item.userName}</h3>
+
+                  <span className="text-xs text-default-500">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+
+                <p className="mt-2">{item.comment}</p>
+              </div>
+            ))}
           </div>
 
           {/* Action Decision Buttons Layer */}
