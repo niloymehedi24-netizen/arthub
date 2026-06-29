@@ -12,3 +12,6 @@ export const getArtworks = () =>
 
 export const getTransactions = () =>
   serverFetch("/api/admin/transactions");
+
+export const getAdminArtworks = () =>
+  serverFetch("/api/admin/artworks");
