@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-
 import { Card, Skeleton, Button } from "@heroui/react";
 
 export default function BoughtArtworkGrid({ artworks, loading }) {
@@ -24,7 +23,7 @@ export default function BoughtArtworkGrid({ artworks, loading }) {
     );
   }
 
-  if (!artworks.length) {
+  if (!artworks || !artworks.length) {
     return (
       <div className="rounded-3xl border border-dashed border-default-300 p-20 text-center">
         <h2 className="text-3xl font-bold">No Purchased Artworks</h2>
@@ -54,14 +53,20 @@ export default function BoughtArtworkGrid({ artworks, loading }) {
         >
           <div className="relative h-64">
             <Image
-              src={art.artworkImage}
-              alt={art.artworkTitle}
-              fill
-              className="object-cover transition duration-500 group-hover:scale-110"
+              // ✅ FIX: Fallback to null or a secure global placeholder if artworkImage is an empty string
+              src={
+                art.artworkImage && art.artworkImage.trim() !== ""
+                  ? art.artworkImage
+                  : "/placeholder-artwork.jpg"
+              }
+              alt={art.artworkTitle || "ArtHub Masterpiece"}
+              height={600}
+              width={500}
+              className="object-cover transition duration-500 group-hover:scale-110 h-full w-full"
             />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 p-5">
             <h3 className="text-xl font-bold">{art.artworkTitle}</h3>
 
             <p className="text-default-500">{art.artistName}</p>
@@ -73,10 +78,13 @@ export default function BoughtArtworkGrid({ artworks, loading }) {
             </div>
 
             <p className="text-xs text-default-400">
-              Purchased on {new Date(art.purchasedAt).toLocaleDateString()}
+              Purchased on{" "}
+              {art.purchasedAt
+                ? new Date(art.purchasedAt).toLocaleDateString()
+                : "Unknown date"}
             </p>
 
-            <Link href={`/browse-artworks/${art.artworkId}`}>
+            <Link href={`/browse-artworks/${art.artworkId || ""}`}>
               <Button color="secondary" fullWidth>
                 View Details
               </Button>
