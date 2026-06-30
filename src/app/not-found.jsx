@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@heroui/react";
-import { Home, TriangleExclamation, Compass } from "@gravity-ui/icons";
+import { TriangleExclamation, Compass, House } from "@gravity-ui/icons";
 
 export default function NotFoundPage() {
   return (
@@ -55,7 +55,7 @@ export default function NotFoundPage() {
             href="/"
             size="lg"
             className="h-13 px-8 rounded-xl bg-linear-to-r from-fuchsia-500 to-cyan-400 font-bold text-white shadow-xl shadow-fuchsia-500/25 transition-all hover:scale-[1.02] hover:shadow-fuchsia-500/40"
-            startContent={<Home className="h-4 w-4" />}
+            startContent={<House className="h-4 w-4" />}
           >
             Back to ArtHub Gallery
           </Button>
