@@ -76,7 +76,6 @@ The goal of ArtHub is to provide a modern digital marketplace where:
 
 - @heroui/react
 - @better-auth/react
-- @tanstack/react-query
 - react-hook-form
 - axios
 - framer-motion
@@ -85,6 +84,8 @@ The goal of ArtHub is to provide a modern digital marketplace where:
 - react
 - react-dom
 - tailwindcss
+- Recharts
+- React icons
 
 ### Server
 
