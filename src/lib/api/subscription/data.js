@@ -1,7 +1,4 @@
 import { serverFetch } from "../server";
 
-export const getSubscription = (email) => {
-  return serverFetch(
-    `/api/subscriptions/${email}`
-  );
-};
+export const getSubscription = (email) =>
+  serverFetch(`/api/subscriptions/${email}`);

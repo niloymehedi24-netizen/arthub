@@ -1,5 +1,4 @@
 import { serverMutation } from "../server";
 
-export const subscribePlan = (data) => {
-  return serverMutation("/api/subscriptions", "POST", data);
-};
+export const subscribeUser = (data) =>
+  serverMutation("/api/subscriptions", "POST", data);
