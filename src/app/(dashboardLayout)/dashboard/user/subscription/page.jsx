@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import { useSession } from "@/lib/auth-client";
-
-import { subscribePlan } from "@/lib/api/subscription/action";
 
 import { getSubscription } from "@/lib/api/subscription/data";
 import { Button, Card, Chip, ProgressBar } from "@heroui/react";
@@ -45,6 +42,8 @@ export default function SubscriptionPage() {
 
   const [subscription, setSubscription] = useState(null);
 
+  const router = useRouter();
+
   useEffect(() => {
     if (!session?.user?.email) return;
 
@@ -57,24 +56,10 @@ export default function SubscriptionPage() {
     fetchData();
   }, [session]);
 
-  const handleUpgrade = async (plan) => {
-    try {
-      await subscribePlan({
-        userEmail: session.user.email,
-        userName: session.user.name,
-        plan: plan.name,
-        price: plan.price,
-        maxPurchases: plan.maxPurchases,
-      });
+  const handleUpgrade = (plan) => {
+    if (plan.name === "Free") return;
 
-      toast.success(`Welcome to ${plan.name}!`);
-
-      const updated = await getSubscription(session.user.email);
-
-      setSubscription(updated);
-    } catch {
-      toast.error("Upgrade failed");
-    }
+    router.push(`/dashboard/user/subscription/checkout?plan=${plan.name}`);
   };
 
   return (
