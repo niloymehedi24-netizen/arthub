@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button, Input } from "@heroui/react";
-import { Envelope, Lock, Person, Palette, Shield } from "@gravity-ui/icons";
+import { Envelope, Lock, Person, Palette } from "@gravity-ui/icons";
 import { FcGoogle } from "react-icons/fc";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
