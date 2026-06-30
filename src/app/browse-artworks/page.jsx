@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Input, Card, Skeleton } from "@heroui/react";
+import { Input, Card, Skeleton, Pagination } from "@heroui/react";
 import { Magnifier } from "@gravity-ui/icons";
 import { getAllArtworks } from "@/lib/api/artwork/data";
 import EmptyState from "@/components/EmptyState";
@@ -28,6 +28,10 @@ export default function BrowseArtworksPage() {
   const [sort, setSort] = useState("newest");
   const [error, setError] = useState("");
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
   useEffect(() => {
     const fetchArt = async () => {
       try {
@@ -37,6 +41,7 @@ export default function BrowseArtworksPage() {
         const data = await getAllArtworks(search, category, sort);
 
         setArtworks(Array.isArray(data) ? data : []);
+        setPage(1); // Reset page whenever filters change
       } catch (err) {
         console.error(err);
         setError("Unable to load artworks.");
@@ -45,12 +50,21 @@ export default function BrowseArtworksPage() {
         setLoading(false);
       }
     };
+
     const delayDebounceFn = setTimeout(() => {
       fetchArt();
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [search, category, sort]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(artworks.length / ITEMS_PER_PAGE);
+
+  const paginatedArtworks = artworks.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE,
+  );
 
   if (error) {
     return (
@@ -71,19 +85,19 @@ export default function BrowseArtworksPage() {
         <h1 className="text-4xl font-black text-foreground">
           Explore Masterpieces
         </h1>
+
         <p className="mt-2 text-default-500">
           Discover and buy original artworks from creators globally.
         </p>
       </div>
 
-      {/* Controls: Search & Filter bar */}
+      {/* Search + Filter */}
       <div className="mb-8 grid gap-4 sm:flex sm:items-center sm:justify-between">
-        {/* FIXED: Removed onValueChange, added native onChange, and fixed isClearable attribute syntax */}
         <Input
-          isclearable="true"
+          isClearable
           className="w-full sm:max-w-xs"
           placeholder="Search title or artist..."
-          startcontent={<Magnifier className="h-4 w-4 text-default-400" />}
+          startContent={<Magnifier className="h-4 w-4 text-default-400" />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -114,7 +128,7 @@ export default function BrowseArtworksPage() {
         </div>
       </div>
 
-      {/* Artworks Grid */}
+      {/* Loading */}
       {loading ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {[...Array(8)].map((_, i) => (
@@ -122,10 +136,12 @@ export default function BrowseArtworksPage() {
               <Skeleton className="rounded-lg">
                 <div className="h-48 rounded-lg bg-default-300" />
               </Skeleton>
+
               <div className="space-y-3">
                 <Skeleton className="w-3/4 rounded-lg">
                   <div className="h-3 rounded-lg bg-default-200" />
                 </Skeleton>
+
                 <Skeleton className="w-2/3 rounded-lg">
                   <div className="h-3 rounded-lg bg-default-200" />
                 </Skeleton>
@@ -142,48 +158,92 @@ export default function BrowseArtworksPage() {
             setSearch("");
             setCategory("all");
             setSort("newest");
+            setPage(1);
           }}
         />
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {artworks.map((art) => (
-            <Link key={art._id} href={`/browse-artworks/${art._id}`}>
-              <Card
-                ispressable="true"
-                className="group overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-fuchsia-500/10"
-              >
-                {/* FIXED: Replaced raw img with fixed layout Next.js Image attributes */}
-                <div className="p-0 overflow-hidden relative">
-                  <div className="relative aspect-4/3 overflow-hidden">
-                    <Image
-                      src={art.image || "/placeholder-art.jpg"}
-                      alt={art.title}
-                      height={500}
-                      width={500}
-                      className="object-cover transition duration-500 group-hover:scale-110"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      priority={false}
-                    />
+        <>
+          {/* Artworks */}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {paginatedArtworks.map((art) => (
+              <Link key={art._id} href={`/browse-artworks/${art._id}`}>
+                <Card
+                  isPressable
+                  className="group overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-fuchsia-500/10"
+                >
+                  <div className="overflow-hidden">
+                    <div className="relative aspect-4/3 overflow-hidden">
+                      <Image
+                        src={art.image || "/placeholder-art.jpg"}
+                        alt={art.title}
+                        width={500}
+                        height={500}
+                        className="object-cover transition duration-500 group-hover:scale-110"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 p-4">
+                      <h3 className="line-clamp-1 font-bold">{art.title}</h3>
+
+                      <p className="text-xs text-default-500">
+                        By {art.artistName}
+                      </p>
+
+                      <p className="font-black text-fuchsia-500">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(art.price)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4 space-y-1.5 text-left">
-                    <h3 className="font-bold text-base text-foreground line-clamp-1">
-                      {art.title}
-                    </h3>
-                    <p className="text-xs font-medium text-default-500">
-                      By {art.artistName}
-                    </p>
-                    <p className="text-sm font-black text-fuchsia-500">
-                      {new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(art.price)}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex justify-center">
+              <Pagination>
+                <Pagination.Content>
+                  <Pagination.Item>
+                    <Pagination.Previous
+                      isDisabled={page === 1}
+                      onPress={() => setPage((prev) => prev - 1)}
+                    >
+                      <Pagination.PreviousIcon />
+                      <span>Previous</span>
+                    </Pagination.Previous>
+                  </Pagination.Item>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (number) => (
+                      <Pagination.Item key={number}>
+                        <Pagination.Link
+                          isActive={page === number}
+                          onPress={() => setPage(number)}
+                        >
+                          {number}
+                        </Pagination.Link>
+                      </Pagination.Item>
+                    ),
+                  )}
+
+                  <Pagination.Item>
+                    <Pagination.Next
+                      isDisabled={page === totalPages}
+                      onPress={() => setPage((prev) => prev + 1)}
+                    >
+                      <span>Next</span>
+                      <Pagination.NextIcon />
+                    </Pagination.Next>
+                  </Pagination.Item>
+                </Pagination.Content>
+              </Pagination>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
