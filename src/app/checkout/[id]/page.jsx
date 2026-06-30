@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
 import DashboardHeading from "@/components/dashboard/DashboardHeading";
 import PaymentForm from "@/components/payment/PaymentForm";
 import OrderSummary from "@/components/payment/OrderSummary";
 
-import { getArtwork } from "@/lib/api/artworks/data";
 import { createPaymentIntent } from "@/lib/api/payment/action";
+import { Elements } from "@stripe/react-stripe-js";
+import { getArtwork } from "@/lib/api/artwork/data";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,

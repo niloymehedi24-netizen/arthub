@@ -13,3 +13,6 @@ export const getAllArtworks = async (search = "", category = "", sort = "") => {
 export const getSingleArtwork = async (id) => {
   return await serverFetch(`/api/artworks/single/${id}`);
 };
+
+export const getArtwork = (id) =>
+  serverFetch(`/api/artworks/single/${id}`);

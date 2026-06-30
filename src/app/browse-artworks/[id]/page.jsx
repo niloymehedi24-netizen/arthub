@@ -294,14 +294,16 @@ export default function ArtworkDetailsPage() {
                 </Button>
               </div>
             ) : (
-              <Button
-                isDisabled={!canPurchase}
-                onPress={handlePurchase}
-                className="w-full h-14 rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-base font-black text-white shadow-xl shadow-fuchsia-500/20"
-                startContent={<ShoppingBag className="h-5 w-5" />}
-              >
-                {isOwner ? "You Own This Artwork" : "Buy Artwork"}
-              </Button>
+              <Link href={`/checkout/${artwork._id}`}>
+                <Button
+                  isDisabled={!canPurchase}
+                  onPress={handlePurchase}
+                  className="w-full h-14 rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-base font-black text-white shadow-xl shadow-fuchsia-500/20"
+                  startContent={<ShoppingBag className="h-5 w-5" />}
+                >
+                  {isOwner ? "You Own This Artwork" : "Buy Artwork"}
+                </Button>
+              </Link>
             )}
           </div>
           <CommentsSection artwork={artwork} session={session} />
