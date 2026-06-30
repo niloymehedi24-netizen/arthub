@@ -60,7 +60,7 @@ export default function PaymentForm({ artwork }) {
 
       toast.success("Payment Successful!");
 
-      router.push("/dashboard/user");
+      router.push("/payment-success");
     }
 
     setLoading(false);

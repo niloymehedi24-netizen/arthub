@@ -12,20 +12,20 @@ export default function CommentsSection({ artwork, session }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load Comments
-  useEffect(() => {
+  // ✅ Simple, standard function accessible to everyone in the component
+  const loadComments = async () => {
     if (!artwork?._id) return;
+    try {
+      const data = await getComments(artwork._id);
+      setComments(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load comments");
+    }
+  };
 
-    const loadComments = async () => {
-      try {
-        const data = await getComments(artwork._id);
-        setComments(data);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load comments");
-      }
-    };
-
+  // ✅ Safely triggers when the component loads or the artwork ID changes
+  useEffect(() => {
     loadComments();
   }, [artwork?._id]);
 
@@ -42,16 +42,15 @@ export default function CommentsSection({ artwork, session }) {
       await createComment({
         artworkId: artwork._id,
         artworkTitle: artwork.title,
-
         userName: session.user.name,
         userEmail: session.user.email,
-
         comment: text,
       });
 
       toast.success("Comment added");
 
-      loadComments();
+      // ✅ Instantly updates UI list
+      await loadComments();
     } catch (err) {
       console.error(err);
       toast.error("Failed to add comment");
@@ -63,15 +62,14 @@ export default function CommentsSection({ artwork, session }) {
   // Delete Comment
   const handleDelete = async (id) => {
     const ok = window.confirm("Delete this comment?");
-
     if (!ok) return;
 
     try {
       await deleteComment(id);
-
       toast.success("Comment deleted");
 
-      loadComments();
+      // ✅ Instantly removes card from UI
+      await loadComments();
     } catch (err) {
       console.error(err);
       toast.error("Delete failed");
@@ -82,7 +80,6 @@ export default function CommentsSection({ artwork, session }) {
     <section className="mt-16">
       <div className="mb-8">
         <h2 className="text-3xl font-black">Comments ({comments.length})</h2>
-
         <p className="text-default-500">
           Share your thoughts about this artwork.
         </p>
@@ -94,7 +91,6 @@ export default function CommentsSection({ artwork, session }) {
         {comments.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-default-300 py-12 text-center">
             <h3 className="text-lg font-bold">No comments yet</h3>
-
             <p className="mt-2 text-default-500">
               Be the first person to comment on this artwork.
             </p>

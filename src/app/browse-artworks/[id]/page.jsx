@@ -9,7 +9,7 @@ import { Button, Skeleton } from "@heroui/react";
 import { useSession } from "@/lib/auth-client";
 import { getSingleArtwork } from "@/lib/api/artwork/data";
 import { deleteArtwork } from "@/lib/api/artwork/action";
-import { purchaseArtwork } from "@/lib/api/purchase/action";
+
 // import { createComment } from "@/lib/api/comment/action";
 // import { getComments } from "@/lib/api/comment/data";
 import Image from "next/image";
@@ -24,14 +24,6 @@ export default function ArtworkDetailsPage() {
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  // const [comments, setComments] = useState([]);
-  // const [comment, setComment] = useState("");
-
-  // useEffect(() => {
-  //   if (!id) return;
-
-  //   getComments(id).then(setComments);
-  // }, [id]);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -46,33 +38,6 @@ export default function ArtworkDetailsPage() {
     };
     fetchItem();
   }, [id]);
-
-  // const handleComment = async () => {
-  //   if (!session?.user) {
-  //     toast.error("Please login first");
-  //     return;
-  //   }
-
-  //   if (!comment.trim()) return;
-
-  //   await createComment({
-  //     artworkId: id,
-  //     artworkTitle: artwork.title,
-
-  //     userName: session.user.name,
-  //     userEmail: session.user.email,
-
-  //     comment,
-  //   });
-
-  //   toast.success("Comment Added");
-
-  //   setComment("");
-
-  //   const updated = await getComments(id);
-
-  //   setComments(updated);
-  // };
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
@@ -98,44 +63,8 @@ export default function ArtworkDetailsPage() {
     }
   };
 
-  const handlePurchase = async () => {
-    if (!session?.user) {
-      toast.error("Please login first.");
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const purchase = {
-        artworkId: artwork._id,
-
-        artworkTitle: artwork.title,
-
-        artworkImage: artwork.image,
-
-        artistName: artwork.artistName,
-
-        artistEmail: artwork.artistEmail,
-
-        buyerName: session.user.name,
-
-        buyerEmail: session.user.email,
-
-        price: artwork.price,
-      };
-
-      await purchaseArtwork(purchase);
-
-      toast.success("Artwork purchased successfully!");
-    } catch (error) {
-      console.log(error);
-
-      toast.error("Purchase failed.");
-    }
-  };
-
   const canPurchase =
-    session?.user && session.user.email !== artwork?.artistEmail;
+    !!session?.user && session.user.email !== artwork?.artistEmail;
 
   if (loading) {
     return (
@@ -237,38 +166,6 @@ export default function ArtworkDetailsPage() {
             </p>
           </div>
 
-          {/* <div className="space-y-5">
-            <h2 className="text-xl font-bold">Comments</h2>
-
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={4}
-              className="w-full rounded-xl border p-4"
-              placeholder="Write your thoughts..."
-            />
-
-            <Button color="secondary" onPress={handleComment}>
-              Post Comment
-            </Button>
-          </div> */}
-
-          {/* <div className="space-y-4">
-            {comments.map((item) => (
-              <div key={item._id} className="rounded-xl border p-5">
-                <div className="flex justify-between">
-                  <h3 className="font-semibold">{item.userName}</h3>
-
-                  <span className="text-xs text-default-500">
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-
-                <p className="mt-2">{item.comment}</p>
-              </div>
-            ))}
-          </div> */}
-
           {/* Action Decision Buttons Layer */}
           <div className="pt-4 border-t border-default-200">
             {isOwner ? (
@@ -284,8 +181,7 @@ export default function ArtworkDetailsPage() {
 
                 <Button
                   color="danger"
-                  variant="danger-soft"
-                  className="font-bold"
+                  variant="danger"
                   isLoading={deleteLoading}
                   onPress={handleDelete}
                   startContent={<TrashBin className="h-4 w-4" />}
@@ -293,17 +189,24 @@ export default function ArtworkDetailsPage() {
                   Delete
                 </Button>
               </div>
-            ) : (
-              <Link href={`/checkout/${artwork._id}`}>
+            ) : session ? (
+              <Link href={`/checkout/${artwork._id}`} className="block">
                 <Button
                   isDisabled={!canPurchase}
-                  onPress={handlePurchase}
-                  className="w-full h-14 rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-base font-black text-white shadow-xl shadow-fuchsia-500/20"
+                  className="h-14 w-full rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-base font-black text-white shadow-xl shadow-fuchsia-500/20"
                   startContent={<ShoppingBag className="h-5 w-5" />}
                 >
-                  {isOwner ? "You Own This Artwork" : "Buy Artwork"}
+                  Proceed to Secure Checkout
                 </Button>
               </Link>
+            ) : (
+              <Button
+                as={Link}
+                href="/login"
+                className="h-14 w-full rounded-2xl bg-linear-to-r from-fuchsia-500 via-pink-500 to-cyan-400 text-base font-black text-white shadow-xl"
+              >
+                Login to Purchase
+              </Button>
             )}
           </div>
           <CommentsSection artwork={artwork} session={session} />
