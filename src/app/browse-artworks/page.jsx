@@ -94,10 +94,10 @@ export default function BrowseArtworksPage() {
       {/* Search + Filter */}
       <div className="mb-8 grid gap-4 sm:flex sm:items-center sm:justify-between">
         <Input
-          isClearable
+          isclearable="true"
           className="w-full sm:max-w-xs"
           placeholder="Search title or artist..."
-          startContent={<Magnifier className="h-4 w-4 text-default-400" />}
+          startcontent={<Magnifier className="h-4 w-4 text-default-400" />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

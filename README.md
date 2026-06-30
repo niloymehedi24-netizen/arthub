@@ -1,36 +1,177 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎨 ArtHub
 
-## Getting Started
+ArtHub is a full-stack online artwork marketplace where artists can showcase and sell their artwork while buyers can explore, purchase, and manage their collections. The platform provides secure authentication, payment integration, user role management, artwork management, and an intuitive browsing experience.
 
-First, run the development server:
+## 🌐 Live Website
+
+**Client:** https://arthub-blue.vercel.app
+
+**Server:** https://arthub-server-pied.vercel.app
+
+---
+
+## 🎯 Project Purpose
+
+The goal of ArtHub is to provide a modern digital marketplace where:
+
+- Artists can upload and manage their artwork.
+- Buyers can browse, search, filter, and purchase artworks.
+- Administrators can manage users, artworks, and transactions.
+- Secure authentication and online payments create a complete marketplace experience.
+
+---
+
+## ✨ Key Features
+
+- 🔐 Email & Google Authentication using Better Auth
+- 👤 User Profile Management
+- 🎨 Add, Edit, Delete, and View Artworks
+- 🔍 Search artworks by title or artist
+- 🏷️ Category Filtering
+- 📊 Price & Date Sorting
+- 📄 Client-side Pagination
+- ❤️ Purchase Artwork
+- 💳 Stripe Payment Integration
+- 🖼️ Personal Purchased Gallery
+- 💬 Artwork Comment System
+- ⭐ Subscription Plans
+- 👨‍💼 Admin Dashboard
+- 📈 Analytics Dashboard
+- 👥 User Role Management
+- 📦 Transaction Management
+- 📱 Fully Responsive Design
+- ⚡ Loading Skeletons and Empty States
+- ☁️ Image Upload with ImgBB
+
+---
+
+## 🛠️ Technologies Used
+
+### Frontend
+
+- Next.js 16
+- React 19
+- Tailwind CSS
+- HeroUI
+- Better Auth
+- Stripe
+- React icons
+- React Hot Toast
+- Recharts
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Stripe
+- CORS
+- Dotenv
+
+---
+
+## 📦 NPM Packages Used
+
+### Client
+
+- @heroui/react
+- @better-auth/react
+- @tanstack/react-query
+- react-hook-form
+- axios
+- framer-motion
+- react-hot-toast
+- next
+- react
+- react-dom
+- tailwindcss
+
+### Server
+
+- express
+- mongodb
+- cors
+- dotenv
+- stripe
+
+---
+
+## 📂 Project Structure
+
+Client
+
+- Authentication
+- Browse Artworks
+- Artwork Details
+- Dashboard
+- User Profile
+- Purchased Gallery
+- Admin Panel
+
+Server
+
+- REST API
+- MongoDB Collections
+- Payment API
+- Artwork API
+- User API
+- Subscription API
+- Purchase API
+- Comment API
+
+---
+
+## 🚀 Installation
+
+### Clone the repository
+
+```bash
+git clone <your-client-repository-url>
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Start development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🔑 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file for the client and a `.env` file for the server.
 
-## Learn More
+### Client
 
-To learn more about Next.js, take a look at the following resources:
+```env
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_AUTH_URL=
+NEXT_PUBLIC_IMGBB_API_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+MONGODB_URI=
+DB_NAME=
+STRIPE_SECRET_KEY=
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👨‍💻 Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Mehedi Hasan Niloy **
+
+---
+
+## 📜 License
+
+This project was created for educational purposes.
