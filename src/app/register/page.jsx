@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button, Input } from "@heroui/react";
-import { Envelope, Lock, Person, Palette } from "@gravity-ui/icons";
+import { Envelope, Lock, Person, Palette, Shield } from "@gravity-ui/icons";
 import { FcGoogle } from "react-icons/fc";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
@@ -31,6 +31,20 @@ export default function RegisterPage() {
       return;
     }
 
+    // Force strict admin validation credentials
+    if (role === "admin") {
+      if (email.toLowerCase() !== "admin@arthub.com") {
+        toast.error(
+          "Admin account must register using email: admin@arthub.com",
+        );
+        return;
+      }
+      if (password !== "Admin@123") {
+        toast.error("Admin account must use the assigned password: Admin@123");
+        return;
+      }
+    }
+
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;
@@ -49,7 +63,7 @@ export default function RegisterPage() {
         email,
         password,
         role,
-        callbackURL: "/",
+        callbackURL: role === "admin" ? "/dashboard/admin" : "/",
       });
 
       if (error) {
@@ -57,7 +71,7 @@ export default function RegisterPage() {
       }
 
       toast.success("Account created successfully");
-      router.replace("/");
+      router.replace(role === "admin" ? "/dashboard/admin" : "/");
       router.refresh();
     } catch (error) {
       toast.error(error.message || "Something went wrong");
@@ -157,7 +171,9 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 label="Email"
-                placeholder="Enter your email"
+                placeholder={
+                  role === "admin" ? "admin@arthub.com" : "Enter your email"
+                }
                 variant="bordered"
                 required
                 startcontent={<Envelope className="h-4 w-4 text-default-400" />}
@@ -168,7 +184,9 @@ export default function RegisterPage() {
                   name="password"
                   type="password"
                   label="Password"
-                  placeholder="Create password"
+                  placeholder={
+                    role === "admin" ? "Admin@123" : "Create password"
+                  }
                   variant="bordered"
                   required
                   startcontent={<Lock className="h-4 w-4 text-default-400" />}
@@ -178,7 +196,9 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   type="password"
                   label="Confirm Password"
-                  placeholder="Confirm password"
+                  placeholder={
+                    role === "admin" ? "Admin@123" : "Confirm password"
+                  }
                   variant="bordered"
                   required
                   startcontent={<Lock className="h-4 w-4 text-default-400" />}
@@ -190,21 +210,21 @@ export default function RegisterPage() {
                   Register as
                 </p>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-3 sm:grid-cols-3">
                   <Button
                     type="button"
                     variant={role === "user" ? "flat" : "bordered"}
                     onClick={() => setRole("user")}
-                    className={`min-h-28 w-full rounded-2xl border px-4 py-4 ${
+                    className={`min-h-24 w-full rounded-2xl border px-3 py-3 ${
                       role === "user"
                         ? "border-fuchsia-400 bg-fuchsia-500/10"
                         : "border-default-200 bg-default-50 hover:border-fuchsia-300 dark:bg-default-100/5"
                     }`}
                   >
                     <div className="flex w-full flex-col items-start whitespace-normal text-left">
-                      <p className="font-black text-foreground">User / Buyer</p>
-                      <p className="mt-1 text-sm font-normal leading-5 text-default-500">
-                        Browse, buy, and comment on artworks.
+                      <p className="font-black text-sm text-foreground">User</p>
+                      <p className="mt-1 text-xs font-normal leading-4 text-default-500">
+                        Browse and buy art.
                       </p>
                     </div>
                   </Button>
@@ -213,16 +233,38 @@ export default function RegisterPage() {
                     type="button"
                     variant={role === "artist" ? "flat" : "bordered"}
                     onClick={() => setRole("artist")}
-                    className={`min-h-28 w-full rounded-2xl border px-4 py-4 ${
+                    className={`min-h-24 w-full rounded-2xl border px-3 py-3 ${
                       role === "artist"
                         ? "border-fuchsia-400 bg-fuchsia-500/10"
                         : "border-default-200 bg-default-50 hover:border-fuchsia-300 dark:bg-default-100/5"
                     }`}
                   >
                     <div className="flex w-full flex-col items-start whitespace-normal text-left">
-                      <p className="font-black text-foreground">Artist</p>
-                      <p className="mt-1 text-sm font-normal leading-5 text-default-500">
-                        Upload, manage, and sell original art.
+                      <p className="font-black text-sm text-foreground">
+                        Artist
+                      </p>
+                      <p className="mt-1 text-xs font-normal leading-4 text-default-500">
+                        Sell original art.
+                      </p>
+                    </div>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant={role === "admin" ? "flat" : "bordered"}
+                    onClick={() => setRole("admin")}
+                    className={`min-h-24 w-full rounded-2xl border px-3 py-3 ${
+                      role === "admin"
+                        ? "border-cyan-400 bg-cyan-500/10"
+                        : "border-default-200 bg-default-50 hover:border-cyan-300 dark:bg-default-100/5"
+                    }`}
+                  >
+                    <div className="flex w-full flex-col items-start whitespace-normal text-left">
+                      <p className="font-black text-sm text-foreground">
+                        Admin
+                      </p>
+                      <p className="mt-1 text-xs font-normal leading-4 text-default-500">
+                        Manage marketplace.
                       </p>
                     </div>
                   </Button>

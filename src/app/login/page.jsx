@@ -24,7 +24,8 @@ export default function LoginPage() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email")?.trim();
+    // ✅ FIX: Force lowercase processing to handle mixed-case inputs seamlessly
+    const email = formData.get("email")?.trim().toLowerCase();
     const password = formData.get("password");
 
     if (!email || !password) {
@@ -38,16 +39,12 @@ export default function LoginPage() {
       await authClient.signIn.email({
         email,
         password,
-        // FIXED: fetchOptions handles updating hooks smoothly before structural layout redirect
         fetchOptions: {
           onSuccess: async (ctx) => {
             const role = ctx?.data?.user?.role || "user";
             toast.success("Login successful");
 
-            // Sync current client router state
             router.refresh();
-
-            // Safe redirect transition
             router.replace(getRedirectPath(role));
           },
           onError: (ctx) => {

@@ -11,23 +11,36 @@ import { getComments } from "@/lib/api/comment/data";
 export default function CommentsSection({ artwork, session }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
+  // ✅ Create a simple refresh toggle counter to safely trigger re-fetches
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // ✅ Simple, standard function accessible to everyone in the component
-  const loadComments = async () => {
-    if (!artwork?._id) return;
-    try {
-      const data = await getComments(artwork._id);
-      setComments(data);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to load comments");
-    }
-  };
-
-  // ✅ Safely triggers when the component loads or the artwork ID changes
+  // ✅ All fetch logic lives safely inside the effect wrapper. No red/yellow underlines!
   useEffect(() => {
-    loadComments();
-  }, [artwork?._id]);
+    if (!artwork?._id) return;
+
+    let isMounted = true;
+
+    const fetchFreshComments = async () => {
+      try {
+        const data = await getComments(artwork._id);
+        if (isMounted) {
+          setComments(data);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load comments");
+      }
+    };
+
+    fetchFreshComments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [artwork?._id, refreshKey]); // ✅ Satisfies ESLint perfectly
+
+  // ✅ Simple function to trigger the useEffect whenever a comment changes
+  const triggerRefresh = () => setRefreshKey((prev) => prev + 1);
 
   // Add Comment
   const handleComment = async (text) => {
@@ -49,8 +62,8 @@ export default function CommentsSection({ artwork, session }) {
 
       toast.success("Comment added");
 
-      // ✅ Instantly updates UI list
-      await loadComments();
+      // ✅ Instantly updates UI list by updating the refresh key
+      triggerRefresh();
     } catch (err) {
       console.error(err);
       toast.error("Failed to add comment");
@@ -68,8 +81,8 @@ export default function CommentsSection({ artwork, session }) {
       await deleteComment(id);
       toast.success("Comment deleted");
 
-      // ✅ Instantly removes card from UI
-      await loadComments();
+      // ✅ Instantly updates UI list by updating the refresh key
+      triggerRefresh();
     } catch (err) {
       console.error(err);
       toast.error("Delete failed");
